@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>کافه‌لوکس</title>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+      background: #0c0705;
+      color: #f0ece6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    :root { --gold: #d4af37; --gold-light: #f0d080; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+    /* ===== پس‌زمینه ذرات ===== */
+    #particles-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ===== صفحه ورود شماره میز ===== */
+    #login-page {
+      position: fixed; inset: 0; z-index: 10000;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      background: radial-gradient(circle at 30% 20%, #1f110b, #0c0705);
+      padding: 30px;
+    }
+    #login-page.hide { display: none; }
+    .login-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 24px;
+      padding: 40px 30px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    }
+    .login-box .logo { font-size: 4rem; color: var(--gold); margin-bottom: 12px; }
+    .login-box h1 { color: var(--gold); font-size: 1.8rem; font-weight: 300; letter-spacing: 2px; }
+    .login-box p { opacity: 0.4; font-size: 0.9rem; margin: 6px 0 20px; }
+    .login-box input {
+      width: 100%; padding: 14px 20px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 60px;
+      color: #f0ece6; font-family: inherit; font-size: 1.1rem;
+      text-align: center;
+      transition: 0.3s;
+    }
+    .login-box input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(212,175,55,0.06); }
+    .login-box input::placeholder { color: #666; }
+    .login-box .btn-login {
+      width: 100%; margin-top: 16px;
+      padding: 14px; background: var(--gold); color: #0c0705;
+      border: none; border-radius: 60px;
+      font-weight: 700; font-size: 1rem; cursor: pointer;
+      transition: 0.3s; font-family: inherit;
+    }
+    .login-box .btn-login:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(212,175,55,0.2); }
+    .login-box .error { color: #ff6b6b; font-size: 0.8rem; margin-top: 10px; display: none; }
+
+    /* ===== SPLASH ===== */
+    #splash {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      background: radial-gradient(circle at 30% 20%, #1f110b, #0c0705);
+      transition: opacity 0.9s;
+    }
+    #splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+    .splash-icon { font-size: 5rem; color: var(--gold); animation: pulse 1.8s infinite; }
+    .splash-title { font-size: 2.6rem; margin-top: 20px; color: var(--gold); letter-spacing: 3px; }
+    .splash-loader { margin-top: 30px; width: 40px; height: 40px; border: 3px solid rgba(212,175,55,0.15); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== HEADER ===== */
+    #header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 14px 24px;
+      background: rgba(12,7,5,0.8); backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(212,175,55,0.15);
+      display: flex; justify-content: space-between; align-items: center;
+      transition: padding 0.3s;
+    }
+    #header.shrink { padding: 8px 20px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-left i { font-size: 1.6rem; color: var(--gold); }
+    .header-left span { font-weight: 600; font-size: 1.1rem; letter-spacing: 1px; }
+    .table-badge {
+      background: var(--gold); color: #0c0705;
+      padding: 4px 18px; border-radius: 40px;
+      font-size: 0.8rem; font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 0 20px rgba(212,175,55,0.2);
+      cursor: pointer;
+    }
+    .table-badge:hover { transform: scale(1.04); }
+    .header-right { display: flex; gap: 12px; align-items: center; }
+    .icon-btn {
+      background: rgba(255,255,255,0.06); border: none; color: #f0ece6;
+      width: 42px; height: 42px; border-radius: 50%;
+      font-size: 1.2rem; cursor: pointer;
+      transition: 0.3s; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-btn:hover { background: var(--gold); color: #0c0705; transform: scale(1.05); }
+    .cart-badge {
+      position: absolute; top: -2px; right: -2px;
+      background: #e74c3c; color: #fff; font-size: 0.6rem; font-weight: 700;
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ===== HERO ===== */
+    #hero {
+      margin-top: 72px;
+      padding: 40px 24px 60px;
+      background: radial-gradient(ellipse at 60% 20%, #2d1a0f, #0c0705 70%);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-img { max-width: 180px; margin: 0 auto 20px; border-radius: 50%; box-shadow: 0 20px 60px rgba(212,175,55,0.15); }
+    .hero-img img { border-radius: 50%; width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+    .hero-title { font-size: 2.6rem; font-weight: 300; color: var(--gold); letter-spacing: 2px; }
+    .hero-sub { opacity: 0.5; font-size: 1rem; margin-top: 4px; }
+    .hero-btn {
+      margin-top: 24px; display: inline-block; padding: 12px 44px;
+      border: 1px solid var(--gold); color: var(--gold); border-radius: 60px;
+      transition: 0.4s; cursor: pointer; background: transparent;
+      font-family: inherit; font-size: 0.95rem;
+    }
+    .hero-btn:hover { background: var(--gold); color: #0c0705; box-shadow: 0 0 40px rgba(212,175,55,0.2); }
+
+    /* ===== CATEGORIES ===== */
+    #categories {
+      padding: 10px 16px 20px;
+      background: #0c0705;
+      position: sticky; top: 68px; z-index: 100;
+      display: flex; gap: 10px; overflow-x: auto;
+      scrollbar-width: none;
+      position: relative;
+      z-index: 2;
+    }
+    #categories::-webkit-scrollbar { display: none; }
+    .cat-btn {
+      flex: 0 0 auto;
+      padding: 8px 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 40px;
+      color: #aaa;
+      font-family: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex; align-items: center; gap: 6px;
+      white-space: nowrap;
+    }
+    .cat-btn.active, .cat-btn:hover {
+      background: var(--gold); color: #0c0705; border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(212,175,55,0.15);
+    }
+
+    /* ===== پرفروش‌ترین‌ها ===== */
+    #bestsellers {
+      padding: 10px 20px 20px;
+      background: #0c0705;
+      position: relative;
+      z-index: 1;
+    }
+    #bestsellers .title {
+      color: var(--gold);
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bestseller-scroll {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .bestseller-scroll::-webkit-scrollbar { display: none; }
+    .bs-item {
+      flex: 0 0 auto;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(212,175,55,0.12);
+      border-radius: 16px;
+      padding: 10px 16px;
+      min-width: 120px;
+      text-align: center;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    .bs-item:hover { border-color: var(--gold); transform: translateY(-3px); }
+    .bs-item .emoji { font-size: 2rem; display: block; }
+    .bs-item .name { font-size: 0.8rem; margin-top: 4px; }
+    .bs-item .price { font-size: 0.75rem; color: var(--gold-light); font-weight: 700; }
+
+    /* ===== SEARCH ===== */
+    #search-wrap { padding: 0 20px 20px; background: #0c0705; position: relative; z-index: 1; }
+    #search-wrap input {
+      width: 100%; padding: 12px 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 60px;
+      color: #f0ece6; font-family: inherit; font-size: 0.95rem;
+      transition: 0.3s;
+    }
+    #search-wrap input:focus { outline: none; border-color: var(--gold); }
+
+    /* ===== PRODUCTS ===== */
+    #products {
+      padding: 10px 20px 140px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .product-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 24px;
+      padding: 14px 14px 18px;
+      transition: 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-card:hover { transform: translateY(-6px); border-color: var(--gold); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+    .product-card .emoji-big { font-size: 4.5rem; text-align: center; display: block; margin-bottom: 8px; line-height: 1; transition: 0.4s; }
+    .product-card:hover .emoji-big { transform: scale(1.08); }
+    .product-card .badge {
+      display: inline-block; font-size: 0.6rem; padding: 2px 10px; border-radius: 40px;
+      background: var(--gold); color: #0c0705; font-weight: 700;
+    }
+    .product-card h4 { font-size: 1rem; margin-bottom: 2px; }
+    .product-card .desc { font-size: 0.75rem; opacity: 0.4; }
+    .product-card .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+    .product-card .price { font-weight: 700; color: var(--gold-light); font-size: 0.9rem; }
+    .product-card .add-btn {
+      background: var(--gold); border: none; color: #0c0705;
+      width: 34px; height: 34px; border-radius: 50%;
+      font-size: 1rem; cursor: pointer;
+      transition: 0.3s; display: flex; align-items: center; justify-content: center;
+      z-index: 5;
+    }
+    .product-card .add-btn:hover { transform: rotate(90deg) scale(1.1); box-shadow: 0 0 30px rgba(212,175,55,0.3); }
+
+    /* ===== افکت‌ها ===== */
+    .sparkle-container { position: fixed; inset: 0; z-index: 999; pointer-events: none; }
+    .sparkle {
+      position: absolute; width: 8px; height: 8px; background: var(--gold);
+      border-radius: 50%; box-shadow: 0 0 20px var(--gold);
+      animation: sparkleAnim 0.8s ease-out forwards;
+    }
+    @keyframes sparkleAnim {
+      0% { transform: scale(1) translate(0,0); opacity: 1; }
+      100% { transform: scale(0) translate(var(--tx), var(--ty)); opacity: 0; }
+    }
+    .fly-element {
+      position: fixed; z-index: 9999; font-size: 2rem;
+      pointer-events: none;
+      transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ===== CART ===== */
+    #cart-float {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      z-index: 500;
+      background: rgba(12,7,5,0.85); backdrop-filter: blur(20px);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 60px;
+      padding: 10px 20px;
+      display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    }
+    #cart-float .info { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+    #cart-float .info span:first-child { background: var(--gold); color: #0c0705; padding: 0 10px; border-radius: 40px; font-weight: 700; }
+    #cart-float .btn-cart { background: var(--gold); color: #0c0705; border: none; padding: 6px 18px; border-radius: 40px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.3s; }
+    #cart-float .btn-cart:hover { transform: scale(1.04); }
+
+    #waiter-btn {
+      position: fixed; bottom: 100px; left: 16px; z-index: 400;
+      background: var(--gold); color: #0c0705; border: none;
+      border-radius: 60px; padding: 10px 16px;
+      box-shadow: 0 8px 30px rgba(212,175,55,0.2);
+      font-weight: 700; display: flex; align-items: center; gap: 6px;
+      cursor: pointer; font-family: inherit; font-size: 0.85rem;
+      transition: 0.3s;
+    }
+    #waiter-btn:hover { transform: scale(1.06) translateY(-4px); }
+
+    /* ===== MODALS ===== */
+    .modal {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(12px);
+      display: none; justify-content: center; align-items: center;
+      padding: 20px;
+    }
+    .modal.open { display: flex; animation: fadeIn 0.3s; }
+    .modal-content {
+      max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto;
+      background: rgba(20,12,8,0.92); backdrop-filter: blur(30px);
+      border: 1px solid rgba(212,175,55,0.12);
+      border-radius: 24px;
+      padding: 28px 24px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.7);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 12px; }
+    .modal-header h3 { font-size: 1.2rem; display: flex; align-items: center; gap: 8px; color: var(--gold); }
+    .modal-close { background: none; border: none; font-size: 2rem; color: #888; cursor: pointer; transition: 0.3s; }
+    .modal-close:hover { color: #fff; transform: rotate(90deg); }
+    .checkout-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .qty-control { display: flex; align-items: center; gap: 8px; }
+    .qty-control button { background: rgba(255,255,255,0.06); border: none; width: 28px; height: 28px; border-radius: 50%; color: #fff; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+    .qty-control button:hover { background: var(--gold); color: #0c0705; }
+    .options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 6px 12px; margin: 12px 0; }
+    .options-grid label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #ccc; cursor: pointer; }
+    #order-notes { width: 100%; padding: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; color: #fff; font-family: inherit; margin-top: 10px; resize: vertical; }
+    .btn-primary { width: 100%; padding: 14px; background: var(--gold); color: #0c0705; border: none; border-radius: 60px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.3s; font-family: inherit; margin-top: 16px; }
+    .btn-primary:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(212,175,55,0.2); }
+
+    /* ===== فاکتور ===== */
+    #invoice {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(212,175,55,0.1);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+    #invoice .inv-header { text-align: center; border-bottom: 1px dashed rgba(212,175,55,0.15); padding-bottom: 12px; margin-bottom: 12px; }
+    #invoice .inv-header h2 { color: var(--gold); font-size: 1.1rem; }
+    #invoice .inv-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.85rem; }
+    #invoice .inv-row.total { border-top: 1px solid rgba(212,175,55,0.15); padding-top: 10px; margin-top: 6px; font-weight: 700; color: var(--gold-light); }
+    #invoice .inv-items { margin: 8px 0; }
+    #invoice .inv-items .item { display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.7; padding: 2px 0; }
+    .share-btn {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(212,175,55,0.15);
+      color: #f0ece6; padding: 8px 16px; border-radius: 40px;
+      cursor: pointer; font-family: inherit; font-size: 0.8rem;
+      transition: 0.3s; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .share-btn:hover { background: var(--gold); color: #0c0705; }
+
+    /* ===== نوار بار ===== */
+    .timer-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 10px; margin: 12px 0; overflow: hidden; }
+    .timer-bar .fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 10px; width: 100%; transition: width 1s linear; }
+
+    /* ===== سفارشات ذخیره شده ===== */
+    .saved-order {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(212,175,55,0.08);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+    }
+    .saved-order .status {
+      display: inline-block;
+      font-size: 0.65rem;
+      padding: 2px 10px;
+      border-radius: 40px;
+      font-weight: 700;
+    }
+    .saved-order .status.sent { background: #27ae60; color: #fff; }
+    .saved-order .status.pending { background: #f39c12; color: #fff; }
+    .saved-order .status.failed { background: #e74c3c; color: #fff; }
+    .saved-order .resend-btn {
+      background: var(--gold); color: #0c0705;
+      border: none; padding: 4px 14px;
+      border-radius: 40px; font-size: 0.7rem;
+      cursor: pointer; font-family: inherit;
+      transition: 0.3s;
+    }
+    .saved-order .resend-btn:hover { transform: scale(1.04); }
+
+    /* ===== FOOTER ===== */
+    #footer { background: #0c0705; padding: 30px 20px 16px; border-top: 1px solid rgba(212,175,55,0.06); text-align: center; font-size: 0.8rem; opacity: 0.5; position: relative; z-index: 1; }
+    #footer .social { display: flex; justify-content: center; gap: 20px; font-size: 1.4rem; margin: 8px 0; }
+    #footer .social a { color: #aaa; transition: 0.3s; }
+    #footer .social a:hover { color: var(--gold); transform: translateY(-3px); }
+
+    @media (max-width: 480px) {
+      .header-left span { display: none; }
+      #products { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .hero-title { font-size: 2rem; }
+      .product-card .emoji-big { font-size: 3.5rem; }
+      .login-box { padding: 30px 20px; }
+    }
+    @keyframes fadeIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+  </style>
+</head>
+<body>
+
+<!-- ===== پس‌زمینه ذرات ===== -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- ===== صفحه ورود شماره میز ===== -->
+<div id="login-page">
+  <div class="login-box">
+    <div class="logo">☕</div>
+    <h1>کافه‌لوکس</h1>
+    <p>لطفاً شماره میز خود را وارد کنید</p>
+    <input type="number" id="table-input" placeholder="مثلاً ۱۲" min="1" max="99" />
+    <div class="error" id="login-error">لطفاً شماره میز را وارد کنید</div>
+    <button class="btn-login" id="login-btn">ورود به منو</button>
+  </div>
+</div>
+
+<!-- ===== SPLASH ===== -->
+<div id="splash">
+  <div class="splash-icon"><i class="fas fa-mug-hot"></i></div>
+  <div class="splash-title">کافه‌لوکس</div>
+  <div class="splash-loader"></div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header id="header" style="display:none;">
+  <div class="header-left">
+    <i class="fas fa-mug-hot"></i>
+    <span>کافه‌لوکس</span>
+  </div>
+  <div class="table-badge" id="table-badge" title="تغییر شماره میز">
+    <i class="fas fa-utensils"></i>
+    میز <span id="table-number">--</span>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" id="orders-history-btn" title="سفارشات قبلی">
+      <i class="fas fa-history"></i>
+    </button>
+    <button class="icon-btn" id="cart-toggle">
+      <i class="fas fa-shopping-bag"></i>
+      <span class="cart-badge" id="cart-badge">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section id="hero" style="display:none;">
+  <div class="hero-img">
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='100' fill='%232d1a0f'/%3E%3Ctext x='50' y='130' font-size='90' fill='%23d4af37' font-family='Arial'%3E☕%3C/text%3E%3C/svg%3E" alt="قهوه" />
+  </div>
+  <h1 class="hero-title">هر فنجان، یک خاطره.</h1>
+  <p class="hero-sub">✦ طعم‌های بی‌نظیر در فضایی لوکس ✦</p>
+  <a href="#products" class="hero-btn">مشاهده منو</a>
+</section>
+
+<!-- ===== پرفروش‌ترین‌ها ===== -->
+<section id="bestsellers" style="display:none;">
+  <div class="title"><i class="fas fa-fire" style="color:#ff6b35;"></i> پرفروش‌ترین‌های امروز</div>
+  <div class="bestseller-scroll" id="bestseller-scroll"></div>
+</section>
+
+<!-- ===== CATEGORIES ===== -->
+<div id="categories" style="display:none;">
+  <button class="cat-btn active" data-cat="all"><i class="fas fa-th"></i> همه</button>
+  <button class="cat-btn" data-cat="coffee"><i class="fas fa-mug-hot"></i> قهوه</button>
+  <button class="cat-btn" data-cat="cold"><i class="fas fa-glass-whiskey"></i> سرد</button>
+  <button class="cat-btn" data-cat="dessert"><i class="fas fa-cake"></i> دسر</button>
+  <button class="cat-btn" data-cat="food"><i class="fas fa-pizza-slice"></i> غذا</button>
+</div>
+
+<!-- ===== SEARCH ===== -->
+<div id="search-wrap" style="display:none;">
+  <input type="text" id="search-input" placeholder="جستجوی محصول..." />
+</div>
+
+<!-- ===== PRODUCTS ===== -->
+<div id="products" style="display:none;"></div>
+
+<!-- ===== WAITER ===== -->
+<button id="waiter-btn" style="display:none;"><i class="fas fa-concierge-bell"></i> گارسون</button>
+
+<!-- ===== CART ===== -->
+<div id="cart-float" style="display:none;">
+  <div class="info">
+    <span id="cart-count">0</span> آیتم
+    <span id="cart-total">۰</span> تومان
+  </div>
+  <button class="btn-cart" id="cart-open">مشاهده سبد</button>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- CART -->
+<div class="modal" id="cart-modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3><i class="fas fa-shopping-bag"></i> سبد خرید</h3><button class="modal-close" data-close="cart-modal">&times;</button></div>
+    <div id="cart-items"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:16px;font-weight:700;"><span>جمع کل:</span><span id="cart-modal-total">۰</span> تومان</div>
+    <button class="btn-primary" id="checkout-open">ثبت سفارش</button>
+  </div>
+</div>
+
+<!-- CHECKOUT -->
+<div class="modal" id="checkout-modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3><i class="fas fa-clipboard-list"></i> ثبت سفارش</h3><button class="modal-close" data-close="checkout-modal">&times;</button></div>
+    <div id="checkout-items"></div>
+    <div class="options-grid">
+      <label><input type="checkbox" value="کم شکر" /> کم شکر</label>
+      <label><input type="checkbox" value="پر شکر" /> پر شکر</label>
+      <label><input type="checkbox" value="بدون یخ" /> بدون یخ</label>
+      <label><input type="checkbox" value="خامه اضافه" /> خامه اضافه</label>
+      <label><input type="checkbox" value="بدون خامه" /> بدون خامه</label>
+      <label><input type="checkbox" value="شیر بادام" /> شیر بادام</label>
+      <label><input type="checkbox" value="بدون لاکتوز" /> بدون لاکتوز</label>
+      <label><input type="checkbox" value="لیوان بزرگ" /> لیوان بزرگ</label>
+      <label><input type="checkbox" value="لیوان کوچک" /> لیوان کوچک</label>
+    </div>
+    <textarea id="order-notes" placeholder="توضیحات اضافی..."></textarea>
+    <div style="display:flex;justify-content:space-between;margin:12px 0;"><span>میز: <span id="checkout-table">--</span></span><span>جمع: <span id="checkout-total">۰</span> تومان</span></div>
+    <button class="btn-primary" id="submit-order">ثبت نهایی سفارش</button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="modal" id="success-modal">
+  <div class="modal-content" style="text-align:center;">
+    <div style="font-size:4rem;color:#27ae60;"><i class="fas fa-check-circle"></i></div>
+    <h3 style="color:var(--gold);">✅ سفارش ثبت شد</h3>
+    <div style="margin:12px 0;">
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;"><span>⏳ زمان آماده‌سازی</span><span id="timer-display">۱۵:۰۰</span></div>
+      <div class="timer-bar"><div class="fill" id="timer-fill" style="width:100%;"></div></div>
+    </div>
+    <div id="invoice">
+      <div class="inv-header"><h2>🧾 کافه‌لوکس</h2><div style="font-size:0.7rem;opacity:0.5;">فاکتور رسمی</div></div>
+      <div class="inv-row"><span>شماره سفارش</span><span id="order-number">#123456</span></div>
+      <div class="inv-row"><span>تاریخ</span><span id="order-date"></span></div>
+      <div class="inv-row"><span>ساعت</span><span id="order-time"></span></div>
+      <div class="inv-row"><span>میز</span><span id="order-table">--</span></div>
+      <div class="inv-items" id="invoice-items"></div>
+      <div class="inv-row total"><span>جمع کل</span><span id="order-amount">۰</span> تومان</div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0 12px;">
+      <button class="share-btn" id="share-invoice"><i class="fas fa-share-alt"></i> اشتراک‌گذاری</button>
+      <button class="share-btn" id="download-invoice"><i class="fas fa-download"></i> ذخیره</button>
+    </div>
+    <button class="btn-primary" id="success-close">باشه</button>
+  </div>
+</div>
+
+<!-- ===== سفارشات ذخیره شده (تاریخچه) ===== -->
+<div class="modal" id="history-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-history"></i> تاریخچه سفارشات</h3>
+      <button class="modal-close" data-close="history-modal">&times;</button>
+    </div>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="modal" id="feedback-modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3><i class="fas fa-comment-dots"></i> انتقاد و پیشنهاد</h3><button class="modal-close" data-close="feedback-modal">&times;</button></div>
+    <form id="feedback-form">
+      <input type="text" id="fb-name" placeholder="نام (اختیاری)" style="width:100%;padding:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px;color:#fff;margin-bottom:12px;" />
+      <textarea id="fb-message" rows="4" placeholder="متن پیام..." required style="width:100%;padding:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px;color:#fff;resize:vertical;"></textarea>
+      <button type="submit" class="btn-primary">ارسال</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer id="footer" style="display:none;">
+  <p style="margin-bottom:4px;">📞 ۰۲۱-۱۲۳۴۵۶۷۸ &nbsp;|&nbsp; 📍 تهران، ولیعصر</p>
+  <p style="margin-bottom:8px;">همه روزه ۸ صبح تا ۱۲ شب</p>
+  <div class="social">
+    <a href="#"><i class="fab fa-instagram"></i></a>
+    <a href="#"><i class="fab fa-telegram"></i></a>
+    <a href="#" id="feedback-open"><i class="fas fa-comment"></i></a>
+  </div>
+  <p style="margin-top:12px;opacity:0.3;font-size:0.7rem;">&copy; ۱۴۰۵ کافه‌لوکس ✦</p>
+</footer>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT                                                   -->
+<!-- ============================================================ -->
+<script>
+  (function() {
+    'use strict';
+
+    // ===== CONFIG =====
+    const FLASK_API = 'http://28.66.47.49:5002/send';
+
+    // ===== PRODUCTS =====
+    const PRODUCTS = [
+      { id: 1, name: 'اسپرسو کلاسیک', desc: 'اصیل ایتالیایی', price: 45000, time: '۳', badge: '🔥', cat: 'coffee', emoji: '☕' },
+      { id: 2, name: 'لاته ماکیاتو', desc: 'با کارامل', price: 58000, time: '۵', badge: '⭐', cat: 'coffee', emoji: '☕' },
+      { id: 3, name: 'موکا شکلاتی', desc: 'شکلات تلخ', price: 62000, time: '۶', badge: '💚', cat: 'coffee', emoji: '🍫' },
+      { id: 4, name: 'آیس لاته', desc: 'سرد با شیر بادام', price: 56000, time: '۴', badge: '🥤', cat: 'cold', emoji: '🧊' },
+      { id: 5, name: 'اسموتی توت', desc: 'ماست یونانی', price: 49000, time: '۵', badge: '⭐', cat: 'cold', emoji: '🍓' },
+      { id: 6, name: 'کیک شکلاتی', desc: 'با گاناش', price: 42000, time: '۷', badge: '🔥', cat: 'dessert', emoji: '🍰' },
+      { id: 7, name: 'چیزکیک توت', desc: 'سس توت فرنگی', price: 53000, time: '۸', badge: '💚', cat: 'dessert', emoji: '🧀' },
+      { id: 8, name: 'ساندویچ پنیر', desc: 'گودا و سبزیجات', price: 68000, time: '۱۰', badge: '🍕', cat: 'food', emoji: '🥪' },
+      { id: 9, name: 'پیتزا مینی', desc: 'پپرونی و زیتون', price: 75000, time: '۱۲', badge: '🔥', cat: 'food', emoji: '🍕' },
+      { id: 10, name: 'پاستا آلفردو', desc: 'مرغ و سس', price: 89000, time: '۱۵', badge: '⭐', cat: 'food', emoji: '🍝' }
+    ];
+
+    const BESTSELLERS = [PRODUCTS[0], PRODUCTS[5], PRODUCTS[8], PRODUCTS[1]];
+
+    // ===== STATE =====
+    let state = {
+      table: null,
+      cart: [],
+      currentCat: 'all',
+      timerInterval: null,
+      orders: [] // ذخیره سفارشات
+    };
+
+    // ===== DOM =====
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+
+    // ===== HELPERS =====
+    function fmt(n) { return n.toLocaleString('fa-IR'); }
+    function getDate() { return new Intl.DateTimeFormat('fa-IR').format(new Date()); }
+    function getTime() { return new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' }).format(new Date()); }
+    function genOrder() { return '#' + String(Math.floor(100000 + Math.random() * 900000)); }
+
+    // ===== ذرات طلایی =====
+    function initParticles() {
+      const canvas = document.getElementById('particles-canvas');
+      const ctx = canvas.getContext('2d');
+      let w, h;
+      const particles = [];
+      const COUNT = 60;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      class Particle {
+        constructor() { this.reset(); }
+        reset() {
+          this.x = Math.random() * w;
+          this.y = Math.random() * h;
+          this.size = Math.random() * 2 + 1.5;
+          this.speedX = (Math.random() - 0.5) * 0.4;
+          this.speedY = (Math.random() - 0.5) * 0.4;
+          this.opacity = Math.random() * 0.5 + 0.2;
+        }
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          if (this.x < 0 || this.x > w) { this.speedX *= -1; }
+          if (this.y < 0 || this.y > h) { this.speedY *= -1; }
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
+          ctx.fill();
+          ctx.shadowColor = 'rgba(212, 175, 55, 0.2)';
+          ctx.shadowBlur = 12;
+        }
+      }
+
+      for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+      function animate() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    // ===== مدیریت ذخیره‌سازی سفارشات =====
+    function loadOrders() {
+      try {
+        const data = localStorage.getItem('cafe_orders');
+        state.orders = data ? JSON.parse(data) : [];
+      } catch { state.orders = []; }
+    }
+
+    function saveOrders() {
+      try {
+        localStorage.setItem('cafe_orders', JSON.stringify(state.orders));
+      } catch (e) { console.warn('ذخیره سفارشات失敗', e); }
+    }
+
+    function addOrder(orderData) {
+      state.orders.unshift(orderData); // جدیدترین در بالا
+      if (state.orders.length > 100) state.orders.pop(); // محدودیت ۱۰۰ سفارش
+      saveOrders();
+    }
+
+    function updateOrderStatus(orderId, status) {
+      const order = state.orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = status;
+        saveOrders();
+      }
+    }
+
+    // ===== افکت‌ها =====
+    function createSparkles(target) {
+      const rect = target.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const container = document.createElement('div');
+      container.className = 'sparkle-container';
+      document.body.appendChild(container);
+
+      for (let i = 0; i < 16; i++) {
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 60 + Math.random() * 100;
+        s.style.cssText = `
+          left:${cx}px; top:${cy}px;
+          --tx:${Math.cos(angle) * dist}px;
+          --ty:${Math.sin(angle) * dist}px;
+          width:${4 + Math.random() * 8}px;
+          height:${4 + Math.random() * 8}px;
+          animation-duration:${0.6 + Math.random() * 0.4}s;
+          background:${['#d4af37', '#f0d080', '#ffd700', '#f5e56b'][Math.floor(Math.random()*4)]};
+        `;
+        container.appendChild(s);
+      }
+      setTimeout(() => container.remove(), 1200);
+    }
+
+    function flyToCart(target) {
+      const rect = target.getBoundingClientRect();
+      const cart = document.getElementById('cart-float');
+      const cartRect = cart.getBoundingClientRect();
+
+      const flyer = document.createElement('div');
+      flyer.className = 'fly-element';
+      flyer.textContent = '✦';
+      flyer.style.cssText = `
+        left:${rect.left + rect.width/2 - 20}px;
+        top:${rect.top}px;
+        color:var(--gold);
+        font-size:2.5rem;
+        text-shadow:0 0 30px rgba(212,175,55,0.6);
+      `;
+      document.body.appendChild(flyer);
+
+      requestAnimationFrame(() => {
+        flyer.style.left = (cartRect.left + cartRect.width / 2 - 20) + 'px';
+        flyer.style.top = (cartRect.top - 20) + 'px';
+        flyer.style.transform = 'scale(0.3)';
+        flyer.style.opacity = '0.6';
+      });
+
+      setTimeout(() => {
+        flyer.remove();
+        createSparkles(cart);
+      }, 900);
+    }
+
+    // ===== رندر محصولات =====
+    function renderProducts(cat, q) {
+      let list = PRODUCTS;
+      if (cat !== 'all') list = list.filter(p => p.cat === cat);
+      if (q && q.trim()) {
+        const s = q.trim().toLowerCase();
+        list = list.filter(p => p.name.includes(s) || p.desc.includes(s));
+      }
+      if (!list.length) {
+        $('#products').innerHTML = '<p style="grid-column:1/-1;text-align:center;opacity:0.3;padding:40px 0;">محصولی یافت نشد</p>';
+        return;
+      }
+      $('#products').innerHTML = list.map(p => `
+        <div class="product-card" data-id="${p.id}">
+          <span class="emoji-big">${p.emoji}</span>
+          ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+          <h4>${p.name}</h4>
+          <div class="desc">${p.desc}</div>
+          <div class="meta">
+            <span class="price">${fmt(p.price)} تومان</span>
+            <button class="add-btn" data-id="${p.id}"><i class="fas fa-plus"></i></button>
+          </div>
+        </div>
+      `).join('');
+
+      $('#products').querySelectorAll('.add-btn').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const id = +btn.dataset.id;
+          const card = btn.closest('.product-card');
+          addToCart(id);
+          flyToCart(btn);
+          createSparkles(card);
+          card.style.transform = 'scale(1.06)';
+          setTimeout(() => card.style.transform = '', 400);
+        };
+      });
+    }
+
+    // ===== رندر پرفروش‌ها =====
+    function renderBestsellers() {
+      const container = document.getElementById('bestseller-scroll');
+      container.innerHTML = BESTSELLERS.map(p => `
+        <div class="bs-item" data-id="${p.id}">
+          <span class="emoji">${p.emoji}</span>
+          <div class="name">${p.name}</div>
+          <div class="price">${fmt(p.price)}</div>
+        </div>
+      `).join('');
+      container.querySelectorAll('.bs-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = +el.dataset.id;
+          addToCart(id);
+          createSparkles(el);
+        });
+      });
+    }
+
+    // ===== CART =====
+    function addToCart(id) {
+      const p = PRODUCTS.find(x => x.id === id);
+      if (!p) return;
+      const exist = state.cart.find(x => x.id === id);
+      if (exist) exist.qty++;
+      else state.cart.push({ ...p, qty: 1 });
+      updateCartUI();
+    }
+
+    function removeFromCart(id) { state.cart = state.cart.filter(x => x.id !== id); updateCartUI(); }
+
+    function changeQty(id, delta) {
+      const item = state.cart.find(x => x.id === id);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) removeFromCart(id);
+      else updateCartUI();
+    }
+
+    function getTotal() { return state.cart.reduce((s, i) => s + i.price * i.qty, 0); }
+    function getCount() { return state.cart.reduce((s, i) => s + i.qty, 0); }
+
+    function updateCartUI() {
+      const count = getCount(), total = getTotal();
+      $('#cart-badge').textContent = count;
+      $('#cart-count').textContent = count;
+      $('#cart-total').textContent = fmt(total);
+      renderCartModal();
+    }
+
+    function renderCartModal() {
+      if (!state.cart.length) {
+        $('#cart-items').innerHTML = '<p style="text-align:center;opacity:0.4;padding:20px 0;">سبد خالی است</p>';
+        $('#cart-modal-total').textContent = '۰';
+        return;
+      }
+      $('#cart-items').innerHTML = state.cart.map(item => `
+        <div class="checkout-item">
+          <div><strong>${item.emoji} ${item.name}</strong> <span style="font-size:0.8rem;opacity:0.5;">${fmt(item.price)}</span></div>
+          <div class="qty-control">
+            <button data-id="${item.id}" data-delta="-1">-</button>
+            <span>${item.qty}</span>
+            <button data-id="${item.id}" data-delta="1">+</button>
+            <button data-id="${item.id}" data-delta="0" style="background:transparent;color:#e74c3c;border:none;font-size:1rem;cursor:pointer;"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+      $('#cart-items').querySelectorAll('.qty-control button').forEach(btn => {
+        btn.onclick = () => {
+          const id = +btn.dataset.id, delta = +btn.dataset.delta;
+          if (delta === 0) removeFromCart(id);
+          else changeQty(id, delta);
+        };
+      });
+      $('#cart-modal-total').textContent = fmt(getTotal());
+    }
+
+    // ===== CHECKOUT =====
+    function openCheckout() {
+      if (!state.cart.length) { alert('سبد خالی است'); return; }
+      if (!state.table) { alert('لطفاً شماره میز را وارد کنید'); return; }
+      $('#checkout-table').textContent = state.table;
+      $('#checkout-total').textContent = fmt(getTotal());
+      $('#checkout-items').innerHTML = state.cart.map(item => `
+        <div class="checkout-item">
+          <div><strong>${item.emoji} ${item.name}</strong> <span style="opacity:0.5;">${fmt(item.price)}</span></div>
+          <div class="qty-control">
+            <button data-id="${item.id}" data-delta="-1">-</button>
+            <span>${item.qty}</span>
+            <button data-id="${item.id}" data-delta="1">+</button>
+          </div>
+        </div>
+      `).join('');
+      $('#checkout-items').querySelectorAll('.qty-control button').forEach(btn => {
+        btn.onclick = () => {
+          const id = +btn.dataset.id, delta = +btn.dataset.delta;
+          changeQty(id, delta);
+          openCheckout();
+        };
+      });
+      $('#cart-modal').classList.remove('open');
+      $('#checkout-modal').classList.add('open');
+    }
+
+    // ===== SEND TO BALE =====
+    async function sendToBale(text) {
+      try {
+        const res = await fetch(FLASK_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        return data.success === true;
+      } catch { return false; }
+    }
+
+    // ===== TIMER =====
+    function startTimer(durationMinutes = 15) {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      let totalSeconds = durationMinutes * 60;
+      const display = document.getElementById('timer-display');
+      const fill = document.getElementById('timer-fill');
+
+      function update() {
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        display.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+        const pct = (totalSeconds / (durationMinutes * 60)) * 100;
+        fill.style.width = pct + '%';
+        if (totalSeconds <= 0) {
+          clearInterval(state.timerInterval);
+          display.textContent = '✅ آماده!';
+          fill.style.background = '#27ae60';
+        }
+        totalSeconds--;
+      }
+      update();
+      state.timerInterval = setInterval(update, 1000);
+    }
+
+    // ===== نمایش تاریخچه سفارشات =====
+    function renderHistory() {
+      const container = document.getElementById('history-list');
+      if (!state.orders.length) {
+        container.innerHTML = '<p style="text-align:center;opacity:0.4;padding:20px 0;">هیچ سفارشی ثبت نشده است</p>';
+        return;
+      }
+      container.innerHTML = state.orders.map((order, index) => {
+        const statusText = order.status === 'sent' ? 'ارسال شده' :
+                          order.status === 'pending' ? 'در انتظار ارسال' :
+                          order.status === 'failed' ? 'خطا در ارسال' : 'نامشخص';
+        const statusClass = order.status === 'sent' ? 'sent' :
+                           order.status === 'pending' ? 'pending' : 'failed';
+        const itemsText = order.items.map(i => `${i.emoji} ${i.name} × ${i.qty}`).join('، ');
+        return `
+          <div class="saved-order">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <strong>${order.id}</strong>
+                <span style="font-size:0.75rem;opacity:0.5;">${order.date} ${order.time}</span>
+              </div>
+              <span class="status ${statusClass}">${statusText}</span>
+            </div>
+            <div style="font-size:0.8rem;margin:4px 0;">میز: ${order.table} | ${itemsText}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+              <span style="font-size:0.85rem;color:var(--gold-light);">${fmt(order.total)} تومان</span>
+              ${order.status !== 'sent' ? `
+                <button class="resend-btn" data-id="${order.id}">🔄 ارسال مجدد</button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // رویداد ارسال مجدد
+      container.querySelectorAll('.resend-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const id = btn.dataset.id;
+          const order = state.orders.find(o => o.id === id);
+          if (!order) return;
+          const ok = await sendToBale(order.message);
+          if (ok) {
+            updateOrderStatus(id, 'sent');
+            btn.remove();
+            alert('✅ سفارش مجدداً ارسال شد');
+            renderHistory();
+          } else {
+            alert('❌ خطا در ارسال مجدد');
+          }
+        };
+      });
+    }
+
+    // ===== SUBMIT ORDER =====
+    async function submitOrder() {
+      if (!state.cart.length) { alert('سبد خالی'); return; }
+      if (!state.table) { alert('لطفاً شماره میز را وارد کنید'); return; }
+
+      const table = state.table;
+      const total = getTotal();
+      const orderNum = genOrder();
+      const options = Array.from(document.querySelectorAll('#checkout-modal .options-grid input:checked')).map(cb => cb.value);
+      const notes = document.getElementById('order-notes').value.trim();
+      const itemsText = state.cart.map(i =>
+        `  • ${i.emoji} ${i.name} × ${i.qty} = ${fmt(i.price * i.qty)} تومان`
+      ).join('\n');
+
+      const msg = `📋 سفارش کافه‌لوکس\n─────────────────\n🔢 شماره: ${orderNum}\n🍽️ میز: ${table}\n📅 تاریخ: ${getDate()}\n⏰ ساعت: ${getTime()}\n─────────────────\n🛒 محصولات:\n${itemsText}\n─────────────────\n💰 جمع کل: ${fmt(total)} تومان\n─────────────────\n⚙️ تنظیمات: ${options.length ? options.join('، ') : 'ندارد'}\n📝 توضیحات: ${notes || 'ندارد'}`;
+
+      // ذخیره سفارش (قبل از ارسال)
+      const orderData = {
+        id: orderNum,
+        table: table,
+        date: getDate(),
+        time: getTime(),
+        items: state.cart.map(i => ({ ...i })),
+        total: total,
+        options: options,
+        notes: notes,
+        message: msg,
+        status: 'pending' // pending, sent, failed
+      };
+      addOrder(orderData);
+
+      // ارسال به ربات
+      const ok = await sendToBale(msg);
+      if (ok) {
+        updateOrderStatus(orderNum, 'sent');
+      } else {
+        updateOrderStatus(orderNum, 'failed');
+        alert('⚠️ سفارش ذخیره شد اما ارسال به ربات انجام نشد. می‌توانید از بخش تاریخچه مجدداً ارسال کنید.');
+      }
+
+      // نمایش فاکتور
+      $('#checkout-modal').classList.remove('open');
+      document.getElementById('order-number').textContent = orderNum;
+      document.getElementById('order-date').textContent = getDate();
+      document.getElementById('order-time').textContent = getTime();
+      document.getElementById('order-table').textContent = table;
+      document.getElementById('order-amount').textContent = fmt(total);
+
+      const itemsHtml = state.cart.map(i =>
+        `<div class="item"><span>${i.emoji} ${i.name} × ${i.qty}</span><span>${fmt(i.price * i.qty)}</span></div>`
+      ).join('');
+      document.getElementById('invoice-items').innerHTML = itemsHtml;
+
+      $('#success-modal').classList.add('open');
+      startTimer(15);
+
+      state.cart = [];
+      updateCartUI();
+      document.getElementById('order-notes').value = '';
+      document.querySelectorAll('#checkout-modal .options-grid input').forEach(cb => cb.checked = false);
+    }
+
+    // ===== اشتراک‌گذاری و دانلود =====
+    function shareInvoice() {
+      const invoice = document.getElementById('invoice');
+      const text = invoice.innerText;
+      if (navigator.share) {
+        navigator.share({ title: 'فاکتور کافه‌لوکس', text: text });
+      } else {
+        navigator.clipboard.writeText(text).then(() => alert('✅ متن فاکتور کپی شد!'));
+      }
+    }
+
+    function downloadInvoice() {
+      const invoice = document.getElementById('invoice');
+      const text = invoice.innerText;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `فاکتور_کافه_${getDate().replace(/\//g,'-')}.txt`;
+      a.click();
+    }
+
+    // ===== WAITER / FEEDBACK =====
+    async function requestWaiter() {
+      if (!state.table) { alert('لطفاً شماره میز را وارد کنید'); return; }
+      const msg = `🙋 درخواست گارسون\nمیز: ${state.table}\nساعت: ${getTime()}`;
+      const ok = await sendToBale(msg);
+      alert(ok ? `✅ درخواست گارسون برای میز ${state.table} ارسال شد` : '❌ خطا');
+    }
+
+    async function sendFeedback(name, text) {
+      if (!state.table) { alert('لطفاً شماره میز را وارد کنید'); return; }
+      const msg = `💬 انتقاد و پیشنهاد\nمیز: ${state.table}\nنام: ${name || 'ناشناس'}\nپیام: ${text}`;
+      const ok = await sendToBale(msg);
+      if (ok) { alert(`✅ نظر شما برای میز ${state.table} ثبت شد`); $('#feedback-modal').classList.remove('open'); }
+      else alert('❌ خطا');
+    }
+
+    // ===== ورود شماره میز =====
+    function showMainSite() {
+      document.querySelectorAll('#hero, #bestsellers, #categories, #search-wrap, #products, #waiter-btn, #cart-float, #footer')
+        .forEach(el => el.style.display = '');
+      document.getElementById('header').style.display = '';
+      document.getElementById('table-number').textContent = state.table;
+      document.getElementById('login-page').classList.add('hide');
+
+      // رندر محتوا
+      renderProducts('all', '');
+      renderBestsellers();
+    }
+
+    function handleLogin() {
+      const input = document.getElementById('table-input');
+      const val = input.value.trim();
+      if (!val || isNaN(val) || parseInt(val) < 1) {
+        document.getElementById('login-error').style.display = 'block';
+        return;
+      }
+      document.getElementById('login-error').style.display = 'none';
+      state.table = parseInt(val);
+      showMainSite();
+
+      // ذخیره در localStorage برای下次
+      try { localStorage.setItem('cafe_table', state.table); } catch {}
+    }
+
+    // ===== INIT =====
+    function init() {
+      // ذرات
+      initParticles();
+
+      // بارگذاری سفارشات
+      loadOrders();
+
+      // بررسی شماره میز ذخیره شده
+      try {
+        const savedTable = localStorage.getItem('cafe_table');
+        if (savedTable) {
+          document.getElementById('table-input').value = savedTable;
+        }
+      } catch {}
+
+      // رویداد ورود
+      document.getElementById('login-btn').addEventListener('click', handleLogin);
+      document.getElementById('table-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleLogin();
+      });
+
+      // Splash
+      setTimeout(() => {
+        document.getElementById('splash').classList.add('hide');
+      }, 2000);
+
+      // تغییر شماره میز از هدر
+      document.getElementById('table-badge').addEventListener('click', () => {
+        if (confirm('آیا می‌خواهید شماره میز را تغییر دهید؟')) {
+          document.querySelectorAll('#hero, #bestsellers, #categories, #search-wrap, #products, #waiter-btn, #cart-float, #footer')
+            .forEach(el => el.style.display = 'none');
+          document.getElementById('header').style.display = 'none';
+          document.getElementById('login-page').classList.remove('hide');
+          document.getElementById('table-input').value = '';
+          document.getElementById('table-input').focus();
+        }
+      });
+
+      // تاریخچه سفارشات
+      document.getElementById('orders-history-btn').addEventListener('click', () => {
+        renderHistory();
+        document.getElementById('history-modal').classList.add('open');
+      });
+      document.querySelector('[data-close="history-modal"]').addEventListener('click', () => {
+        document.getElementById('history-modal').classList.remove('open');
+      });
+      document.getElementById('history-modal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('history-modal')) {
+          document.getElementById('history-modal').classList.remove('open');
+        }
+      });
+
+      // سایر رویدادها
+      document.getElementById('cart-open').onclick = () => { renderCartModal(); document.getElementById('cart-modal').classList.add('open'); };
+      document.querySelector('[data-close="cart-modal"]').onclick = () => document.getElementById('cart-modal').classList.remove('open');
+      document.getElementById('checkout-open').onclick = openCheckout;
+      document.querySelector('[data-close="checkout-modal"]').onclick = () => document.getElementById('checkout-modal').classList.remove('open');
+      document.getElementById('submit-order').onclick = submitOrder;
+
+      document.getElementById('success-close').onclick = () => {
+        document.getElementById('success-modal').classList.remove('open');
+        if (state.timerInterval) clearInterval(state.timerInterval);
+      };
+
+      document.getElementById('waiter-btn').onclick = requestWaiter;
+
+      document.getElementById('feedback-open').onclick = (e) => { e.preventDefault(); document.getElementById('feedback-modal').classList.add('open'); };
+      document.querySelector('[data-close="feedback-modal"]').onclick = () => document.getElementById('feedback-modal').classList.remove('open');
+      document.getElementById('feedback-form').onsubmit = (e) => {
+        e.preventDefault();
+        const name = document.getElementById('fb-name').value.trim();
+        const msg = document.getElementById('fb-message').value.trim();
+        if (!msg) { alert('لطفاً متن پیام را بنویسید'); return; }
+        sendFeedback(name, msg);
+        document.getElementById('fb-name').value = '';
+        document.getElementById('fb-message').value = '';
+      };
+
+      document.getElementById('share-invoice').onclick = shareInvoice;
+      document.getElementById('download-invoice').onclick = downloadInvoice;
+
+      // جستجو و دسته‌بندی (بعد از رندر)
+      document.getElementById('search-input').oninput = () =>
+        renderProducts(state.currentCat, document.getElementById('search-input').value);
+
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.currentCat = btn.dataset.cat;
+          renderProducts(state.currentCat, document.getElementById('search-input').value);
+        };
+      });
+
+      window.onscroll = () => document.getElementById('header').classList.toggle('shrink', window.scrollY > 60);
+
+      console.log('✨ کافه‌لوکس نسخه نهایی با ورود میز و ذخیره سفارشات');
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  })();
+</script>
+</body>
+</html>
